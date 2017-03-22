@@ -243,6 +243,8 @@ function update_spark(s)
  end
 end
 
+
+
 function draw_sparks()
  foreach(sparks, draw_flame) -- don't want embers on top of smoke
  foreach(sparks, draw_smoke)
@@ -392,6 +394,8 @@ end
 
 function _update()
  t += 1
+ update_shakes()
+ update_sparks()
  -- testing interfaces
  if time_to_move_cam() then
   move_map()
@@ -399,14 +403,22 @@ function _update()
  else
   trans_cam(0, tileh/maprate)
  end
+ -- end testing interfaces
 end
 
 function _draw()
+ -- testing interfaces
+ apply_shakes()
+ -- end testing interfaces
  for rn,row in pairs(mappy) do
   for cn,tile in pairs(row) do
    drawtile(cn,rn,tile)
   end
  end
+ -- testing interfaces
+ draw_sparks()
+ reset_shakes()
+ -- end testing interfaces
 end
 
 __gfx__
