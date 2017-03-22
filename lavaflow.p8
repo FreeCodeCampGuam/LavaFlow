@@ -208,6 +208,9 @@ end
 function update_spark(s)
  s.x += s.dx
  s.y += s.dy
+ if time_to_move_cam() then
+  s.y -= tileh
+ end
  s.dx *= .8 + vary(.1, .2)
  s.dy *= .8 + vary(.1, .2)
  if not s.smoke then
@@ -220,6 +223,9 @@ function update_spark(s)
   for p in all(s.parts) do
    p.x += p.dx
    p.y += p.dy
+   if time_to_move_cam() then
+    p.y -= tileh
+   end
    p.dx *= .8 + vary(.1, .2)
    p.dy *= .8 + vary(.1, .2)
    p.dy -= vary(.05,.05)
