@@ -152,10 +152,10 @@ end
 
 --spawn a spark at x,y
 --tp (type) is probability of 0 (flame), 1 (smoke)
---if no dx,dy given, spark will slowly
---float up(-y) as apposed to parabolic movement
+--dx,dx is init velocity
 --if w/h given, spawn at random
 --in area in box of (x,y), (x+w, y+h)
+--dx/dy is effected by spark's spawn pos in w,h area
 --if n given, spawn n sparks
 --vdx,vdy if given, specify the dx,dy variation
 function spawn_spark(tp, x, y, dx, dy, w, h, n, vdx, vdy)
@@ -176,8 +176,12 @@ function spawn_spark(tp, x, y, dx, dy, w, h, n, vdx, vdy)
   s.x     = x+rnd(w)
   s.y     = y+rnd(h)
   s.r     = rnd(2)+1
+  cenx = x + w/2
+  ceny = y + h/2
   s.dx    = vary(dx, vdx)
   s.dy    = vary(dy, vdy)
+  s.dx   += abs(s.dx/2)*(s.x-cenx)/(w/2)
+  s.dy   += abs(s.dy/2)*(s.y-ceny)/(h/2)
   if s.smoke then
    s.parts = {}
    for p=0,3+rnd(4) do
