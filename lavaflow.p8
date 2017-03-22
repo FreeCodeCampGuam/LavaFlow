@@ -47,8 +47,11 @@ cstack = {{0,0}}
 
 function graphics_init()
  sparks = {}
+ shakes = {}
  camx = 0
  camy = 0
+ pcamx = 0
+ pcamy = 0
  cstack = {{0,0}}
 end
 
