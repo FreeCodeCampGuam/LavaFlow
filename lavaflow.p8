@@ -20,6 +20,314 @@ mappy = {}            --mappy since map is a special token
 
 maprate = 60          --how long until the map changes
 
+
+
+--shorter than particles
+sparks = {}
+
+--camera shakes
+shakes = {}
+
+--debug variables
+cx = 64
+cy = 64
+wh = 1
+vdxy = 1
+--end debug
+
+-- use push/pop/trans/shake_cam
+-- to manipulate camera
+camx = 0
+camy = 0
+pcamx = 0 -- prev cam pos
+pcamy = 0
+-- cam stack
+cstack = {{0,0}}
+
+
+function graphics_init()
+ sparks = {}
+ camx = 0
+ camy = 0
+ cstack = {{0,0}}
+end
+
+-- returns true/false at rnd with
+-- percentage given (0 <= p <= 1)
+function weighted_choice(p)
+ return rnd(1)<p
+end
+
+-- returns x +- dx/2
+function vary(i, di)
+ return i+rnd(abs(di))-abs(di)/2
+end
+
+
+--camera interface
+
+-- pushes cam trans matrix to stack
+-- if x,y given, same as
+--  push_cam()
+--  trans_cam(x,y)
+function push_cam(x, y)
+ x = x or 0
+ y = y or 0
+ add(cstack, {camx, camy})
+ trans_cam(x, y)
+end
+
+function pop_cam()
+ prev = cstack[#cstack]
+ camx = prev[1]
+ camy = prev[2]
+ del(cstack, prev)
+ trans_cam(0, 0)
+end
+
+-- all camera modification should
+-- use this function
+-- this should be the only occurence
+-- of the camera function
+function trans_cam(x, y)
+ camx += x
+ camy += y
+ if camx != pcamx or camy != pcamy then
+   camera(camx, camy)
+ end
+ pcamx = camx
+ pcamy = camy
+end
+-- end camera interface
+
+
+-- shake interface
+
+-- x,y: shake more horizontally or vertically
+function add_shake(x, y)
+ local sh = {}
+  sh.x = x
+  sh.y = y
+ add(shakes, sh)
+end
+
+function update_shakes()
+ foreach(shakes, update_shake)
+end
+
+function update_shake(sh)
+ sh.x *= .8 + vary(.1, .2)
+ sh.y *= .8 + vary(.1, .2)
+ if (abs(sh.x) + abs(sh.y)) < 1 then
+  del(shakes, sh)
+ end
+end
+
+-- shake's draw functions (apply/reset)
+-- need to wrap affected drawing code
+-- because they push/pop the camera
+function apply_shakes()
+ foreach(shakes, apply_shake)
+end
+
+function apply_shake(sh)
+ push_cam(vary(0,  sh.x),
+          vary(0,  sh.y))
+end
+
+function reset_shakes()
+ foreach(shakes, reset_shake)
+end
+
+function reset_shake(sh)
+ pop_cam()
+end
+--end shake interface
+
+
+--particle interface
+
+--spawn a spark at x,y
+--tp (type) is probability of 0 (flame), 1 (smoke)
+--if no dx,dy given, spark will slowly
+--float up(-y) as apposed to parabolic movement
+--if w/h given, spawn at random
+--in area in box of (x,y), (x+w, y+h)
+--if n given, spawn n sparks
+--vdx,vdy if given, specify the dx,dy variation
+function spawn_spark(tp, x, y, dx, dy, w, h, n, vdx, vdy)
+ n = n or 1
+ if n < 1 then
+  n = 1
+ end
+ w = w or 0
+ h = h or 0
+ dx = dx or 0
+ dy = dy or 0
+ vdx = vdx or 0
+ vdy = vdy or 0
+ for i=1,n do
+  local s = {}
+  s.smoke = weighted_choice(tp)
+  s.float = dx == nil and dy == nil
+  s.x     = x+rnd(w)
+  s.y     = y+rnd(h)
+  s.r     = rnd(2)+1
+  s.dx    = vary(dx, vdx)
+  s.dy    = vary(dy, vdy)
+  if s.smoke then
+   s.parts = {}
+   for p=0,3+rnd(4) do
+    local p = {}
+     p.w = 2+rnd(3)
+     p.h = 3+rnd(5)
+     p.x = vary(s.x, p.w)
+     p.y = vary(s.y, p.h)
+     p.dx = vary(s.dx, p.w*rnd(.5))
+     p.dy = vary(s.dy, p.h*rnd(.5))
+     p.r = (rnd(3)*p.h)/(3+4)
+     p.hp = rnd(100)
+    add(s.parts, p)
+   end
+  end
+  add(sparks, s)
+ end
+end
+
+function update_sparks()
+ foreach(sparks, update_spark)
+end
+
+function update_spark(s)
+ s.x += s.dx
+ s.y += s.dy
+ s.dx *= .8 + vary(.1, .2)
+ s.dy *= .8 + vary(.1, .2)
+ if not s.smoke then
+  s.r *= .9
+  if s.r < .001 then
+   del(sparks, s)
+  end
+ else -- smoke
+  s.r *= 1.05
+  for p in all(s.parts) do
+   p.x += p.dx
+   p.y += p.dy
+   p.dx *= .8 + vary(.1, .2)
+   p.dy *= .8 + vary(.1, .2)
+   p.dy -= vary(.05,.05)
+   p.x += s.dx
+   p.y += s.dy
+   p.r += vary(.05, .05)
+   p.hp *= .8
+   if p.hp < .001 then
+    del(s.parts, p)
+   end
+  end
+  if #s.parts == 0 then
+   del(sparks, s)
+  end
+ end
+end
+
+function draw_sparks()
+ foreach(sparks, draw_flame) -- don't want embers on top of smoke
+ foreach(sparks, draw_smoke)
+end
+
+function draw_smoke(s)
+ if s.smoke then
+   for p in all(s.parts) do
+    circfill(p.x, p.y, p.r, 6)
+    circfill(p.x, p.y-p.r/3, p.r*.8, 7)
+   end
+  end
+end
+
+function draw_flame(s)
+ if not s.smoke then
+  circfill(s.x, s.y, 0, 4)
+  circfill(s.x, s.y, s.r-.5, 9)
+  circfill(vary(s.x, s.r-1),
+           vary(s.y, s.r-1),
+           s.r-1.3, 10)
+  circfill(vary(s.x, s.r-1.5),
+           vary(s.y, s.r-1.5),
+           s.r-1.7, 7)
+ end
+end
+-- end particle interface
+
+
+-- debug
+function udebug()
+ if btn(4) then
+  if t%10 then
+   add_shake(wh*(cx)/128,
+             wh*(128-cx)/128)
+  end
+  spawn_spark(0.5, cx,cy,0,0,wh,wh,wh/2,vdxy,vdxy)
+ end
+ if btn(5) and btn(4) then
+  vdxy = max(0, vdxy-.5)
+ elseif btn(5) then
+  vdxy = min(20, vdxy+.5)
+ end
+
+ if btn(0) then
+  cx = max(0,cx-1)
+ end
+ if btn(1) then
+  cx = min(127,cx+1)
+ end
+ if btn(2) then
+  wh = max(0,wh-1)
+ end
+ if btn(3) then
+  wh = min(127,wh+1)
+ end
+end
+
+function ddebug()
+ circ(cx,cy,1,3)
+end
+-- end debug
+
+
+-- example usage for particle/shake interfaces
+
+-- function _init()
+--  t = 0
+--  graphics_init()
+-- end
+
+-- function _draw()
+--  cls()
+--  apply_shakes() --need to apply before draw
+--  draw_lava() --draw lava first
+--  draw_sparks() --before sparks
+--  ddebug() -- for debug cursor control
+--  reset_shakes() --need to reset after draw
+-- end
+
+-- function _update()
+--  t += 1
+--  update_shakes() -- update camera shakes at any time
+--  update_sparks() --update sparks first
+--  update_lava() --before lava
+--  udebug() -- for debug cursor control
+-- end
+
+-- function update_lava()
+--  return 2
+-- end
+
+-- function draw_lava()
+--  return 2
+-- end
+
+
+
 function createrow()               --creates particular row, each tiles has own color
  local row = {}
   for c = 1,mapw do
