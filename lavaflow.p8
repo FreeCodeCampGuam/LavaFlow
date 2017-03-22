@@ -412,6 +412,21 @@ function _update()
  else
   trans_cam(0, tileh/maprate)
  end
+ if t%flr(rnd(30))==0 then
+  r = flr(rnd(maph))+1
+  c = flr(rnd(mapw))+1
+  if rnd(10)<1 then
+   --confirmed shake doesn't cause map creep
+   add_shake(rnd(rnd(20)),rnd(20))
+  else
+   spawn_spark(flr(rnd(2)),
+               c*tilew, r*tileh,
+               vary(0,3), vary(0,3),
+               tilew, tileh,
+               rnd(10),
+               rnd(3), rnd(3))
+  end
+ end
  -- end testing interfaces
 end
 
