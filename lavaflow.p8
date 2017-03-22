@@ -369,24 +369,33 @@ function createmap()          --creates rows
  end
 end
 
+function time_to_move_cam()
+ return (t % maprate) == 0
+end
+
 function _init()
  t = 0
  mode = 0
  cls()
  createmap()
  music()
+ -- testing interfaces
+ graphics_init()
+ -- end testing interfaces
 end
 
 function _update()
  t += 1
- if ((t % maprate) == 0) then
+ -- testing interfaces
+ if time_to_move_cam() then
   move_map()
+  trans_cam(0, -tileh)
+ else
+  trans_cam(0, tileh/maprate)
  end
 end
 
 function _draw()
- camera(0,
- flr(2*(t%maprate)/maprate*maph))
  for rn,row in pairs(mappy) do
   for cn,tile in pairs(row) do
    drawtile(cn,rn,tile)
