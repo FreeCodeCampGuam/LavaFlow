@@ -42,6 +42,8 @@ pcamy = 0
 -- cam stack
 cstack = {{0,0}}
 
+--------------------------------------------
+
 function graphics_init()
  sparks = {}
  shakes = {}
@@ -327,12 +329,14 @@ end
 --  udebug() -- for debug cursor control
 -- end
 
-function createlava()
- --
+function create_lava()
+ local lava = {}
+  lava.x = flr(gridw/2)
+  lava.y = flr(gridh/2)
 end
 
 function update_lava()
-  return 2
+ --  
 end
 
 function draw_lava()
@@ -417,11 +421,12 @@ function _init()
  -- testing interfaces
  graphics_init()
  -- end testing interfaces
- createlava()
+ create_lava()
 end
 
 function _update()
  t += 1
+ update_lava()
  update_shakes()
  update_sparks()
  -- testing interfaces
