@@ -243,8 +243,6 @@ function update_spark(s)
  end
 end
 
-
-
 function draw_sparks()
  foreach(sparks, draw_flame) -- don't want embers on top of smoke
  foreach(sparks, draw_smoke)
@@ -354,6 +352,9 @@ end
 function create_tile(col) --returns random color
  local tl = {}
   tl.col = col
+  tl.bg = {n=14,
+           fh=weighted_choice(.5),
+           fv=weighted_choice(.5)}
  return tl
 end
 
@@ -367,8 +368,12 @@ end
 function drawtile(c,r,tile)             --draws the tile
  x = tilew * (c-1)
  y = tileh * (r-1)
- rectfill(x,y,x+tilew,y+tileh,tile.col)
- rect(x,y,x+tilew,y+tileh,7)
+ --rectfill(x,y,x+tilew,y+tileh,tile.col)
+ --rect(x,y,x+tilew,y+tileh,7)
+ bg = tile.bg
+ spr(bg.n, x, y,
+     tilew/8, tileh/8,
+     bg.fh, bg.fv)
 end
 
 function createmap()          --creates rows
