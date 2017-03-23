@@ -340,7 +340,6 @@ end
 -- end
 
 
-
 function createrow()               --creates particular row, each tiles has own color
  local row = {}
   for c = 1,mapw do
@@ -352,9 +351,6 @@ end
 function create_tile(col) --returns random color
  local tl = {}
   tl.col = col
-  -- tl.bg = {n=14,
-  --          fh=weighted_choice(.5),
-  --          fv=weighted_choice(.5)}
   tl.bg = create_bg_tile()
  return tl
 end
@@ -398,12 +394,7 @@ end
 function drawtile(c,r,tile)             --draws the tile
  x = tilew * (c-1)
  y = tileh * (r-1)
- --rectfill(x,y,x+tilew,y+tileh,tile.col)
- --rect(x,y,x+tilew,y+tileh,7)
  bg = tile.bg
- -- spr(bg.n, x, y,
- --     tilew/8, tileh/8,
- --     bg.fh, bg.fv)
  draw_bg(x,y,bg)
 end
 
