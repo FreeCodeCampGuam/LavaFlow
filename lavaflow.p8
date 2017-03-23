@@ -243,8 +243,6 @@ function update_spark(s)
  end
 end
 
-
-
 function draw_sparks()
  foreach(sparks, draw_flame) -- don't want embers on top of smoke
  foreach(sparks, draw_smoke)
@@ -342,7 +340,6 @@ end
 -- end
 
 
-
 function createrow()               --creates particular row, each tiles has own color
  local row = {}
   for c = 1,mapw do
@@ -354,7 +351,37 @@ end
 function create_tile(col) --returns random color
  local tl = {}
   tl.col = col
+  tl.bg = create_bg_tile()
  return tl
+end
+
+function create_bg_tile()
+ local bg = {}
+  choices = {14,15,30,31}
+  -- assumes large tile is square
+  for i=1,(tilew/8)*(tilew/8) do
+   ci = flr(rnd(#choices)+1)
+   c = choices[ci]
+   --del(choices, c)
+   add(bg,
+       {n=c,
+        fh=weighted_choice(.5),
+        fv=weighted_choice(.5)})
+  end
+ return bg
+end
+
+function draw_bg(x,y, bg)
+ nr = tilew/8
+ r = 0
+ c = 0
+ for tl in all(bg) do
+  spr(tl.n, c*8+x, r*8+y, 1,1, tl.fh, tl.fv)
+  if c == nr-1 then
+   r += 1
+  end
+  c = (c+1)%nr
+ end
 end
 
 function move_map()                 --moves the map and generates a new row
@@ -367,8 +394,8 @@ end
 function drawtile(c,r,tile)             --draws the tile
  x = tilew * (c-1)
  y = tileh * (r-1)
- rectfill(x,y,x+tilew,y+tileh,tile.col)
- rect(x,y,x+tilew,y+tileh,7)
+ bg = tile.bg
+ draw_bg(x,y,bg)
 end
 
 function createmap()          --creates rows
@@ -406,6 +433,21 @@ function _update()
   push_cam() -- save reverted state
  else
   trans_cam(0, tileh/maprate)
+ end
+ if t%flr(rnd(30))==0 then
+  r = flr(rnd(maph))+1
+  c = flr(rnd(mapw))+1
+  if rnd(10)<1 then
+   --confirmed shake doesn't cause map creep
+   add_shake(rnd(rnd(20)),rnd(20))
+  else
+   spawn_spark(flr(rnd(2)),
+               c*tilew, r*tileh,
+               vary(0,3), vary(0,3),
+               tilew, tileh,
+               rnd(10),
+               rnd(3), rnd(3))
+  end
  end
  -- end testing interfaces
 end
