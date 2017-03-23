@@ -20,15 +20,13 @@ mappy = {}            --mappy since map is a special token
 
 maprate = 60          --how long until the map changes
 
-
-
 --shorter than particles
 sparks = {}
 
 --camera shakes
 shakes = {}
 
---debug variables
+--debug variables  
 cx = 64
 cy = 64
 wh = 1
@@ -43,7 +41,6 @@ pcamx = 0 -- prev cam pos
 pcamy = 0
 -- cam stack
 cstack = {{0,0}}
-
 
 function graphics_init()
  sparks = {}
@@ -65,7 +62,6 @@ end
 function vary(i, di)
  return i+rnd(abs(di))-abs(di)/2
 end
-
 
 --camera interface
 
@@ -331,13 +327,17 @@ end
 --  udebug() -- for debug cursor control
 -- end
 
--- function update_lava()
---  return 2
--- end
+function createlava()
+ --
+end
 
--- function draw_lava()
---  return 2
--- end
+function update_lava()
+  return 2
+end
+
+function draw_lava()
+ return 2
+end
 
 
 function createrow()               --creates particular row, each tiles has own color
@@ -417,6 +417,7 @@ function _init()
  -- testing interfaces
  graphics_init()
  -- end testing interfaces
+ createlava()
 end
 
 function _update()
