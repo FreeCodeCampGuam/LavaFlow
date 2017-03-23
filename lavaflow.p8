@@ -4,7 +4,7 @@ __lua__
 
 --load lavaflow-jtq
 
-gridw = 127           --grid parameters(for pico-9 screen)
+gridw = 128           --grid parameters(for pico-9 screen)
 gridh = 128
 
 mapw = 8              --how many tiles we want our map to have
