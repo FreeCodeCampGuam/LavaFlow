@@ -399,7 +399,11 @@ function _update()
  -- testing interfaces
  if time_to_move_cam() then
   move_map()
-  trans_cam(0, -tileh)
+  -- don't pop first!
+  -- lucky we have {0,0} in the stack
+  -- after a graphics_init
+  pop_cam() -- revert translations
+  push_cam() -- save reverted state
  else
   trans_cam(0, tileh/maprate)
  end
