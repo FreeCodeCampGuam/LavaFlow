@@ -346,6 +346,7 @@ function create_lava()
   flow.y = flr(tileh*2)
   flow.sw = 2
   flow.sh = 2
+  flow.mode = 4
  add(lava,flow)
 end
 
@@ -354,8 +355,18 @@ function update_lavas()
 end
 
 function update_lava(flo)
- if (btn(0)) then flo.x -= tilew end
- if (btn(1)) then flo.x += tileh end
+ trans = {4,6,8,10}
+ flo.mode = trans[flr((t%maprate)*#trans/maprate)+1] --divided by total transformations + starting sprite number
+ if (btn(0)) then 
+  if (flo.x > 0) then
+   flo.x -= tilew
+  end
+ end
+ if (btn(1)) then
+  if (flo.x < gridw - tilew) then
+   flo.x += tileh
+  end
+ end
 end
 
 function draw_lavas()
@@ -363,7 +374,7 @@ function draw_lavas()
 end
 
 function draw_lava(flo)
- spr(6,flo.x,flo.y,flo.sw,flo.sh)
+ spr(flo.mode,flo.x,flo.y,flo.sw,flo.sh)
 end
 
 function createrow()               --creates particular row, each tiles has own color
