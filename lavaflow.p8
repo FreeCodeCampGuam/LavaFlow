@@ -27,6 +27,12 @@ maprate = 60          --how long until the map changes
 lava = {}
 lava2 = {}
 
+--title globals--
+banner = {}
+loading = false
+
+--interface globals--
+
 --shorter than particles
 sparks = {}
 
@@ -54,6 +60,101 @@ lefttrans = {}
 righttrans = {}
 trans2 = {12,14}
 --------------------------------------------
+
+--init--
+
+function _init()
+ _update = title_update
+ _draw = title_draw
+ title_init()
+end
+
+--title--
+
+function title_init()
+ t = 0
+ loading = false
+ banner = {}
+ banner.pixels = {}
+ banner.y = 32
+ banner.x = 14
+ cls()
+ spr(128, 0,0,13,4)
+ for j=0,32 do
+  banner.pixels[j] = {}
+  for i=0, 100 do
+   banner.pixels[j][i] = pget(i,j)
+  end
+ end
+ cls()
+ push_cam()
+end
+
+function title_draw()
+ cls(12)
+
+
+ if loading then
+  game_draw()
+ end
+
+ camera(0,0)
+ draw_banner()
+ trans_cam(0,0)
+
+ if not loading then
+  if (t-2)%45 > 11 then
+   m = "press x to erupt!"
+   print(m,64-(#m*4)/2, 95, 2)
+  end
+  if t%45 > 15 then
+   m = "press x to erupt!"
+   print(m,64-(#m*4)/2, 95, 1)
+  end
+ end
+end
+
+function title_update()
+ t += 1
+ if loading then
+  t -= 1
+  game_update()
+  if banner.y < -48 then
+   _update = game_update
+   _draw = game_draw
+  end
+ end
+ if not loading then
+  if btn(5) then
+   loading = true
+   game_init()
+  end
+ else
+  banner.y -= .7
+ end
+end
+
+function draw_banner()
+ for j=0,32 do for i=0,100 do
+  if banner.pixels[j][i] != 0 then
+   if not loading then
+    pset(i+banner.x,
+         banner.y+2+j+cos(t/33+i/60)*.2
+         --+cos(t/33+i/60)*1.5
+         ,flr(cos(t/33+(i+30)/60))+10)
+    pset(i+banner.x,
+         banner.y+1+j+cos(t/33+i/60)*.2
+         --+cos(t/33+i/60)*1.5
+         ,9)
+   end
+   pset(i+banner.x,
+        banner.y+j+cos(t/33+i/60)*1.5,
+        banner.pixels[j][i])
+  end
+ end end
+end
+
+--interfaces--
 
 function graphics_init()
  sparks = {}
@@ -485,7 +586,7 @@ function time_to_move_cam()
  return (t % maprate) == 0
 end
 
-function _init()
+function game_init()
  t = 0
  mode = 0
  cls()
@@ -497,7 +598,7 @@ function _init()
  create_lava()
 end
 
-function _update()
+function game_update()
  t += 1
  update_lavas2()
  update_lavas()
@@ -532,7 +633,7 @@ function _update()
  -- end testing interfaces
 end
 
-function _draw()
+function game_draw()
  cls()
  -- testing interfaces
  apply_shakes()
