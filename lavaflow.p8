@@ -20,6 +20,8 @@ mappy = {}            --mappy since map is a special token
 
 maprate = 60          --how long until the map changes
 
+lava = {}
+
 --shorter than particles
 sparks = {}
 
@@ -330,19 +332,30 @@ end
 -- end
 
 function create_lava()
- local lava = {}
-  lava.x = flr(gridw/2)
-  lava.y = flr(gridh/2)
+ local flow = {}
+  flow.x = flr(gridw/2)
+  flow.y = flr(tileh*2)
+  flow.sw = 2
+  flow.sh = 2
+ add(lava,flow)
 end
 
-function update_lava()
- --  
+function update_lavas()
+ foreach(lava,update_lava)
 end
 
-function draw_lava()
- return 2
+function update_lava(flo)
+ if (btn(0)) then flo.x -= tilew end
+ if (btn(1)) then flo.x += tileh end
 end
 
+function draw_lavas()
+ foreach(lava,draw_lava)
+end
+
+function draw_lava(flo)
+ spr(6,flo.x,flo.y,flo.sw,flo.sh)
+end
 
 function createrow()               --creates particular row, each tiles has own color
  local row = {}
@@ -417,7 +430,7 @@ function _init()
  mode = 0
  cls()
  createmap()
- music()
+ music(28)
  -- testing interfaces
  graphics_init()
  -- end testing interfaces
@@ -426,7 +439,7 @@ end
 
 function _update()
  t += 1
- update_lava()
+ update_lavas()
  update_shakes()
  update_sparks()
  -- testing interfaces
@@ -467,6 +480,7 @@ function _draw()
    drawtile(cn,rn,tile)
   end
  end
+ draw_lavas()
  -- testing interfaces
  draw_sparks()
  reset_shakes()
