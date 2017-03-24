@@ -340,13 +340,14 @@ end
 --  udebug() -- for debug cursor control
 -- end
 
-function create_lava()
+function create_lava(mode,x,y,sw,sh,dire)
  local flow = {}
-  flow.x = flr(gridw/2)
-  flow.y = flr(tileh*2)
-  flow.sw = 2
-  flow.sh = 2
-  flow.mode = 4
+  flow.x = x or flr(gridw/2)
+  flow.y = y or flr(tileh*2)
+  flow.sw = sw or 2
+  flow.sh = sh or 2
+  flow.mode = mode or 4
+  flow.dire = dire or 0
  add(lava,flow)
 end
 
@@ -355,7 +356,10 @@ function update_lavas()
 end
 
 function update_lava(flo)
- trans = {4,6,8,10}
+ trans = {4,6,8,10} -- selectable sprites
+ lefttrans = {}
+ righttrans = {}
+ trans2 = {12,14}
  flo.mode = trans[flr((t%maprate)*#trans/maprate)+1] --divided by total transformations + starting sprite number
  if (btn(0)) then 
   if (flo.x > 0) then
@@ -367,6 +371,9 @@ function update_lava(flo)
    flo.x += tileh
   end
  end
+ if time_to_move_cam() then
+  --
+ end
 end
 
 function draw_lavas()
@@ -374,7 +381,7 @@ function draw_lavas()
 end
 
 function draw_lava(flo)
- spr(flo.mode,flo.x,flo.y,flo.sw,flo.sh)
+ spr(flo.mode,flo.x,flo.y,flo.sw,flo.sh,flo.dire)
 end
 
 function createrow()               --creates particular row, each tiles has own color
