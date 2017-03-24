@@ -374,7 +374,7 @@ end
 
 function create_bg_tile()
  local bg = {}
-  choices = {93, 77, 92, 76} --{14,15,30,31}
+  choices = {78, 94, 93, 94, 77, 79, 95} --{14,15,30,31}
   -- assumes large tile is square
   for i=1,(tilew/8)*(tilew/8) do
    ci = flr(rnd(#choices)+1)
