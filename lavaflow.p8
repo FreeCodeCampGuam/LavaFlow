@@ -25,6 +25,7 @@ mappy = {}            --mappy since map is a special token
 maprate = 60          --how long until the map changes
 
 lava = {}
+lava2 = {}
 
 --shorter than particles
 sparks = {}
@@ -48,6 +49,10 @@ pcamy = 0
 -- cam stack
 cstack = {{0,0}}
 
+trans1 = {4,6,8,10} -- selectable sprites
+lefttrans = {}
+righttrans = {}
+trans2 = {12,14}
 --------------------------------------------
 
 function graphics_init()
@@ -340,14 +345,16 @@ end
 --  udebug() -- for debug cursor control
 -- end
 
-function create_lava(mode,x,y,sw,sh,dire)
+function create_lava(x,y,sw,sh,mode,transform,dire,movable)
  local flow = {}
-  flow.x = x or flr(gridw/2)
-  flow.y = y or flr(tileh*2)
-  flow.sw = sw or 2
-  flow.sh = sh or 2
-  flow.mode = mode or 4
-  flow.dire = dire or 0
+  flow.x = x or flr(gridw/2)      --for x position
+  flow.y = y or flr(tileh*2)      --for y position
+  flow.sw = sw or 2               --for sprite width
+  flow.sh = sh or 2               --for sprite height
+  flow.mode = mode or 0           --for current step in animation
+  flow.transform = transform or trans1   --for type of tranformation
+  flow.dire = dire or 0           --for direction
+  flow.movable = movable or true  --for declaring if movable
  add(lava,flow)
 end
 
@@ -355,24 +362,20 @@ function update_lavas()
  foreach(lava,update_lava)
 end
 
-function update_lava(flo)
- trans = {4,6,8,10} -- selectable sprites
- lefttrans = {}
- righttrans = {}
- trans2 = {12,14}
- flo.mode = trans[flr((t%maprate)*#trans/maprate)+1] --divided by total transformations + starting sprite number
- if (btn(0)) then 
-  if (flo.x > 0) then
-   flo.x -= tilew
+function update_lava(fl)
+ fl.mode = fl.transform[flr((t%maprate)*#fl.transform/maprate)+1] --divided by total transformations + starting sprite number
+ if (fl.movable == true) then
+  if (btn(0)) then
+   fl.x = max(0, fl.x-tilew) 
   end
- end
- if (btn(1)) then
-  if (flo.x < gridw - tilew) then
-   flo.x += tileh
+  if (btn(1)) then
+   fl.x = min(gridw-tilew, fl.x+tilew)
   end
  end
  if time_to_move_cam() then
-  --
+  create_lava2(fl.x,flr(fl.y - tileh),fl.sw,fl.sh,trans2)
+  --flo.mode = trans2[flr((t%maprate)*#trans2/maprate)+1]
+  --spr(fl.mode,fl.x,fl.y-tilew,fl.sw,fl.sh)
  end
 end
 
@@ -380,8 +383,38 @@ function draw_lavas()
  foreach(lava,draw_lava)
 end
 
-function draw_lava(flo)
- spr(flo.mode,flo.x,flo.y,flo.sw,flo.sh,flo.dire)
+function draw_lava(fl)
+ spr(fl.mode,fl.x,fl.y,fl.sw,fl.sh)
+end
+
+function create_lava2(x,y,sw,sh,mode,transform)
+ local flow2 = {}
+  flow2.x = x or gridw/2
+  flow2.y = y or tileh
+  flow2.sw = sw or 2
+  flow2.sh = sh or 2
+  flow2.mode = mode or 0
+  flow2.transform = transform or trans2
+ add(lava2,flow2)
+end
+
+function update_lavas2()
+ foreach(lava2,update_lava2)
+end
+
+function update_lava2(fl2)
+ fl2.mode = fl2.transform[flr((t%maprate)*#fl2.transform/maprate)+1]
+ if time_to_move_cam() then
+  fl2.y -= tileh
+ end
+end
+
+function draw_lavas2()
+ foreach(lava2,draw_lava2)
+end
+
+function draw_lava2(fl2)
+ spr(fl2.mode,fl2.x,fl2.y,fl2.sw,fl2.sh)
 end
 
 function createrow()               --creates particular row, each tiles has own color
@@ -466,6 +499,7 @@ end
 
 function _update()
  t += 1
+ update_lavas2()
  update_lavas()
  update_shakes()
  update_sparks()
@@ -499,6 +533,7 @@ function _update()
 end
 
 function _draw()
+ cls()
  -- testing interfaces
  apply_shakes()
  -- end testing interfaces
@@ -507,6 +542,7 @@ function _draw()
    drawtile(cn,rn,tile)
   end
  end
+ draw_lavas2()
  draw_lavas()
  -- testing interfaces
  draw_sparks()
