@@ -64,6 +64,11 @@ trans1 = {4,6,8,10} -- selectable sprites
 trans2 = {12,14}
 transmove = {64,66,68,70}
 
+petrans = {38,40,42}
+pltrans = {32,34,36}
+htrans = {96,98,100}
+rtrans = {46}
+
 --------------------------------------------
 
 --init--
@@ -692,9 +697,9 @@ function create_object(tp)
 end
 
 function create_person()
- local p = {}
+ local pe = {}
 
- return p
+ return pe
 end
 
 function update_person(p)
@@ -720,9 +725,9 @@ function draw_house(x,y,h)
 end
 
 function create_plant()
- local p = {}
+ local pl = {}
 
- return p
+ return pl
 end
 
 function update_plant(p)
