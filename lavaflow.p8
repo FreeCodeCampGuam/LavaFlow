@@ -98,9 +98,7 @@ function title_draw()
   game_draw()
  end
 
- camera(0,0)
- draw_banner()
- trans_cam(0,0)
+ draw_disregard_cam(draw_banner)
 
  if not loading then
   if (t-2)%45 > 11 then
@@ -200,7 +198,8 @@ end
 
 -- all camera modification should
 -- use this function
--- this should be the only occurence
+-- this and draw_disregard_cam
+-- should be the only occurence
 -- of the camera function
 function trans_cam(x, y)
  camx += x
@@ -210,6 +209,12 @@ function trans_cam(x, y)
  end
  pcamx = camx
  pcamy = camy
+end
+
+function draw_disregard_cam(f)
+ camera(0,0)
+ f()
+ trans_cam(0,0)
 end
 -- end camera interface
 
