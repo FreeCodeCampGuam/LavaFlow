@@ -709,7 +709,7 @@ end
 
 function create_rock()
  local r = {}
-
+  r.flipped = weighted_choice(.5)
  return r
 end
 
@@ -742,7 +742,7 @@ function draw_plant(x,y,p)
 end
 
 function draw_rock(x,y,r)
-
+ spr(46,x,y,2,2,r.flipped)
 end
 
 function createmap()          --creates rows
