@@ -673,6 +673,20 @@ end
 
 --objects
 
+function create_object(tp)
+ cdefs = {"house"=create_house, "plant"=create_plant,
+          "person"=create_person, "rock"=create_rock}
+ udefs = {"house"=update_house, "plant"=update_plant,
+          "person"=update_person, "rock"=update_rock}
+ ddefs = {"house"=draw_house, "plant"=draw_plant,
+          "person"=draw_person, "rock"=draw_rock}
+ local ob   = cdefs[tp]()
+  ob.update = udefs[tp]
+  ob.draw   = ddefs[tp]
+  ob.burning = false
+ return ob
+end
+
 function create_person()
 
 end
