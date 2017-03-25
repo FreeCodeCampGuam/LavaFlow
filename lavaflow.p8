@@ -111,7 +111,6 @@ function title_init()
  maprate = 30
  t = 0
  map_t = 0
- score = 0
  lava = {}
  loading_maprate = 150
  loading = false
@@ -163,7 +162,9 @@ function title_draw()
    print(m,64-(#m*4)/2, 95, 2)
   end
  end
-
+ if score != 0 then
+  draw_disregard_cam(draw_score)
+ end
 end
 
 function draw_banner()
@@ -900,6 +901,7 @@ end
 function game_init(imap, ilava)
  t = 0
  map_t = 0
+ score = 0
  --cls()
  --allow other states to load map
  if imap and #imap >= maph+preprows then
