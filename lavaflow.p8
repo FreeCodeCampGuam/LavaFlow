@@ -107,7 +107,12 @@ function banner_init()
 end
 
 function title_init()
+ maprate = 30
  t = 0
+ map_t = 0
+ score = 0
+ lava = {}
+ loading_maprate = 150
  loading = false
  banner_init()
  graphics_init()
@@ -219,7 +224,6 @@ function loading_draw()
  cls(12)
  game_draw()
  draw_disregard_cam(draw_banner)
- print(map_t, 0,7, 7)
 end
 
 --interfaces--
@@ -594,8 +598,8 @@ function rock_collision(x,y)
  if not mappy[r][c].thing then
   return false
  end
- if mappy[r][c].thing.type == "rock" then 
-  mappy[r][c].thing.type = "hitrock" 
+ if mappy[r][c].thing.type == "rock" then
+  mappy[r][c].thing.type = "hitrock"
   return true
  end
  return false
