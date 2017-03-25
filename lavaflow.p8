@@ -711,35 +711,35 @@ function create_rock()
  return r
 end
 
-function update_person()
+function update_person(p)
 
 end
 
-function update_house()
+function update_house(h)
 
 end
 
-function update_plant()
+function update_plant(p)
 
 end
 
-function update_rock()
+function update_rock(r)
 
 end
 
-function draw_person()
+function draw_person(p)
 
 end
 
-function draw_house()
+function draw_house(h)
 
 end
 
-function draw_plant()
+function draw_plant(p)
 
 end
 
-function draw_rock()
+function draw_rock(r)
 
 end
 
