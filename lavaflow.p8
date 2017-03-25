@@ -287,11 +287,6 @@ function spawn_spark(tp, x, y, dx, dy, w, h, n, vdx, vdy)
  for i=1,n do
   local s = {}
   s.smoke = weighted_choice(tp)
-  if s.smoke then
-   sfx(sfx_smoke)
-  else
-   sfx(sfx_spark)
-  end
   s.float = dx == nil and dy == nil
   s.x     = x+rnd(w)
   s.y     = y+rnd(h)
@@ -627,7 +622,13 @@ function game_update()
    --confirmed shake doesn't cause map creep
    add_shake(rnd(rnd(20)),rnd(20))
   else
-   spawn_spark(flr(rnd(2)),
+   smoke = flr(rnd(2))
+   if smoke==1 then
+    sfx(sfx_smoke)
+   else
+    sfx(sfx_spark)
+   end
+   spawn_spark(smoke,
                c*tilew, r*tileh,
                vary(0,3), vary(0,3),
                tilew, tileh,
