@@ -29,6 +29,8 @@ lava2 = {}
 
 types = {"plant","person","house","rock"}
 
+hearts = {}
+
 --title globals--
 banner = {}
 loading = false
@@ -68,6 +70,8 @@ petrans = {38,40,38,42} -- person
 pltrans = {32,34,36} -- plant
 htrans = {96,98,100} -- house
 rtrans = {46} -- rock
+
+hearttrans = {44,60}
 
 --------------------------------------------
 
@@ -768,6 +772,25 @@ function draw_rock(x,y,r)
  spr(rtrans[1],x,y,2,2,r.flipped)
 end
 
+function create_life(counts)
+ thiscount = counts or 3
+ local heart = {}
+ for ct = 1,thiscount do
+  heart.x = gridw - ct*tilew
+  heart.y = tileh/2
+  heart.transform = hearttrans
+ add(hearts,heart)
+ end
+end
+
+function update_lives()
+ foreach(hearts,update_life)
+end
+
+function update_life(heart)
+end
+ 
+
 function createmap()          --creates rows
  for r = #mappy+1,(maph+preprows) do
   mappy[r] = createrow()
@@ -797,6 +820,7 @@ function game_init(imap, ilava)
  else
   create_lava()
  end
+ create_life()
 end
 
 function game_update()
