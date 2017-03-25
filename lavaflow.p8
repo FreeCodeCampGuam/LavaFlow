@@ -695,12 +695,12 @@ function create_object(tp)
 end
 
 function create_person()
- local pe = {}
+ local p = {}
 
- return pe
+ return p
 end
 
-function update_person(pe)
+function update_person(p)
 
 end
 
@@ -723,12 +723,12 @@ function draw_house(x,y,h)
 end
 
 function create_plant()
- local pl = {}
-  pl.transform = pltrans
- return pl
+ local p = {}
+  p.transform = pltrans
+ return p
 end
 
-function update_plant(pl)
+function update_plant(p)
 
 end
 
