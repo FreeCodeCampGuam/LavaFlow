@@ -71,13 +71,13 @@ end
 
 --title--
 
-function title_init()
- t = 0
- loading = false
+function banner_init()
  banner = {}
  banner.pixels = {}
  banner.y = 32
  banner.x = 14
+ banner.h = 32
+ banner.w = 100
  cls()
  spr(128, 0,0,13,4)
  for j=0,32 do
@@ -87,7 +87,14 @@ function title_init()
   end
  end
  cls()
- push_cam()
+end
+
+function title_init()
+ t = 0
+ loading = false
+ banner_init()
+ graphics_init()
+ music(0)
 end
 
 function title_draw()
