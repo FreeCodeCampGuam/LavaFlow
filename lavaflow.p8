@@ -89,21 +89,22 @@ end
 --title--
 
 function banner_init()
- banner = {}
- banner.pixels = {}
- banner.y = 32
- banner.x = 14
- banner.h = 32
- banner.w = 100
- cls()
- spr(128, 0,0,13,4)
- for j=0,32 do
-  banner.pixels[j] = {}
-  for i=0, 100 do
-   banner.pixels[j][i] = pget(i,j)
+ if not banner.pixels then
+  banner.pixels = {}
+  banner.y = 32
+  banner.x = 14
+  banner.h = 32
+  banner.w = 100
+  cls()
+  spr(128, 0,0,13,4)
+  for j=0,32 do
+   banner.pixels[j] = {}
+   for i=0, 100 do
+    banner.pixels[j][i] = pget(i,j)
+   end
   end
+  cls()
  end
- cls()
 end
 
 function title_init()
@@ -186,7 +187,9 @@ end
 function loading_init()
  t = 0
  map_t = 0
+ sfx(30)
  loading = true
+ music(42)
  create_lava(flr(gridw/2), 0)
 end
 
@@ -580,6 +583,7 @@ function update_lava(fl)
   end
  end
  if rock_collision(fl.x, fl.y) then
+  sfx(29)
   hurt_lava()
  end
 end
@@ -846,7 +850,7 @@ function create_life(hcount)
  for i = 1,hc do
   local heart = {}
    heart.x = gridw - (i*tilew/2)
-   heart.y = tileh/8
+   heart.y = 1
    heart.sw = 1
    heart.sh = 1
    heart.mode = hearttrans[1]
@@ -947,7 +951,9 @@ function game_update()
  end
  -- end testing interfaces
  if (#hearts <= 0) then
+  sfx(31)
   title_init()
+  music(36)
   _update = title_update
   _draw = title_draw
  end
