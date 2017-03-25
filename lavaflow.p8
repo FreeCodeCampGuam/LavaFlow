@@ -576,7 +576,7 @@ function update_lava(fl)
   end
  end
  if rock_collision(fl.x, fl.y) then
-  del(lava, fl)
+  hurt_lava()
  end
 end
 
@@ -594,7 +594,11 @@ function rock_collision(x,y)
  if not mappy[r][c].thing then
   return false
  end
- return mappy[r][c].thing.type == "rock"
+ if mappy[r][c].thing.type == "rock" then 
+  mappy[r][c].thing.type = "hitrock" 
+  return true
+ end
+ return false
 end
 
 function create_lava2(x,y,sw,sh,mode,transform,lt)
@@ -833,25 +837,31 @@ function all_colors_to(c)
 end
 -----------------------------------
 
-
-function create_life(counts)
- thiscount = counts or 3
- local heart = {}
- for ct = 1,thiscount do
-  heart.x = gridw - ct*tilew
-  heart.y = tileh/2
-  heart.transform = hearttrans
- add(hearts,heart)
+function create_life(hcount)
+ hc = hcount or 3
+ for i = 1,hc do
+  local heart = {}
+   heart.x = gridw - (i*tilew/2)
+   heart.y = tileh/4
+   heart.sw = 1
+   heart.sh = 1
+   heart.mode = hearttrans[1]
+   heart.transform = hearttrans
+  add(hearts,heart)
  end
 end
 
-function update_lives()
- foreach(hearts,update_life)
+function draw_lives()
+ foreach(hearts,draw_life)
 end
 
-function update_life(heart)
+function draw_life(heart)
+ spr(heart.mode,heart.x,heart.y,heart.sw,heart.sh)
 end
 
+function hurt_lava()
+ del(hearts,hearts[#hearts])
+end
 
 function createmap()          --creates rows
  for r = #mappy+1,(maph+preprows) do
@@ -932,6 +942,11 @@ function game_update()
   map_t = 0
  end
  -- end testing interfaces
+ if (#hearts <= 0) then
+  title_init()
+  _update = title_update
+  _draw = title_draw
+ end
 end
 
 function game_draw()
@@ -964,6 +979,7 @@ function game_draw()
   draw_disregard_cam(draw_score)
  end
  -- end testing interfaces
+ draw_disregard_cam(draw_lives)
 end
 
 __gfx__
