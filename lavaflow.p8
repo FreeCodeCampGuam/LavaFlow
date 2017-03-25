@@ -39,7 +39,7 @@ sparks = {}
 --camera shakes
 shakes = {}
 
---debug variables  
+--debug variables
 cx = 64
 cy = 64
 wh = 1
