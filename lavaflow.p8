@@ -101,13 +101,11 @@ function title_draw()
  draw_disregard_cam(draw_banner)
 
  if not loading then
-  if (t-2)%45 > 11 then
-   m = "press x to erupt!"
-   print(m,64-(#m*4)/2, 95, 2)
-  end
+  m = "press x to erupt!"
   if t%45 > 15 then
-   m = "press x to erupt!"
    print(m,64-(#m*4)/2, 95, 1)
+  elseif (t-2)%45 > 11 then
+   print(m,64-(#m*4)/2, 95, 2)
   end
  end
 end
