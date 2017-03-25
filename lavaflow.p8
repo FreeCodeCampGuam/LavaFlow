@@ -184,6 +184,19 @@ function draw_banner()
         banner.pixels[j][i])
   end
  end end
+ text = {"f","l","o","w"}
+ for i=1, #text do
+  args = {s=text[i], x=cos(t/20+i/12)*.7+28+i*14-cos(t/20+i/6)*.7, y=banner.y+38, c=9}
+  draw_outline(print_string, 10, args)
+  print_string(args)
+  args.y-=1
+  args.c-=1
+  print_string(args)
+ end
+end
+
+function print_string(args)
+ print(args.s, args.x, args.y, args.c)
 end
 
 --loading--
