@@ -846,7 +846,7 @@ function create_life(hcount)
  for i = 1,hc do
   local heart = {}
    heart.x = gridw - (i*tilew/2)
-   heart.y = tileh/4
+   heart.y = tileh/8
    heart.sw = 1
    heart.sh = 1
    heart.mode = hearttrans[1]
