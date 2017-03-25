@@ -588,10 +588,10 @@ function draw_bg(x,y, bg)
 end
 
 function move_map()                 --moves the map and generates a new row
- for change = 1,(maph+preprows-1) do
+ for change = 1,(#mappy-1) do
   mappy[change] = mappy[change + 1]
  end
- mappy[maph+preprows] = createrow()
+ mappy[#mappy] = createrow()
 end
 
 function drawtile(c,r,tile)             --draws the tile
@@ -602,7 +602,7 @@ function drawtile(c,r,tile)             --draws the tile
 end
 
 function createmap()          --creates rows
- for r = 1,(maph+preprows) do
+ for r = #mappy+1,(maph+preprows) do
   mappy[r] = createrow()
  end
 end
