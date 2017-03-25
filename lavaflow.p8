@@ -14,7 +14,7 @@ gridh = 128
 mapw = 8              --how many tiles we want our map to have
 maph = 8
 
-preprows = 1          --how many rows prepared before entering the screen
+preprows = 2          --how many rows prepared before entering the screen
 
 tilew = gridw/mapw    --calculation of how the width and length of tiles
 tileh = gridh/maph
@@ -22,7 +22,7 @@ tileh = gridh/maph
 row = {}
 mappy = {}            --mappy since map is a special token
 
-maprate = 60          --how long until the map changes
+maprate = 30          --how long until the map changes
 
 lava = {}
 lava2 = {}
@@ -56,9 +56,9 @@ pcamy = 0
 cstack = {{0,0}}
 
 trans1 = {4,6,8,10} -- selectable sprites
-lefttrans = {}
-righttrans = {}
 trans2 = {12,14}
+transmove = {64,66,68,70}
+
 --------------------------------------------
 
 --init--
@@ -438,16 +438,17 @@ end
 --  udebug() -- for debug cursor control
 -- end
 
-function create_lava(x,y,sw,sh,mode,transform,dire,movable)
+function create_lava(x,y,sw,sh,mode,transform,movable,dire,timer)
  local flow = {}
   flow.x = x or flr(gridw/2)      --for x position
   flow.y = y or flr(tileh*2)      --for y position
   flow.sw = sw or 2               --for sprite width
   flow.sh = sh or 2               --for sprite height
-  flow.mode = mode or 0           --for current step in animation
+  flow.mode = mode or 4           --for current step in animation
   flow.transform = transform or trans1   --for type of tranformation
-  flow.dire = dire or 0           --for direction
   flow.movable = movable or true  --for declaring if movable
+  flow.dire = dire or false           --for indicating direction
+  flow.timer = timer or 0
  add(lava,flow)
 end
 
@@ -456,19 +457,30 @@ function update_lavas()
 end
 
 function update_lava(fl)
- fl.mode = fl.transform[flr((t%maprate)*#fl.transform/maprate)+1] --divided by total transformations + starting sprite number
+ if (fl.timer <= 0) then
+  fl.transform = trans1
+  fl.mode = fl.transform[flr((t%maprate)*#fl.transform/maprate)+1] --divided by total transformations + starting sprite number
+ else
+  fl.timer -= 1
+ end
  if (fl.movable == true) then
   if (btn(0)) then
-   fl.x = max(0, fl.x-tilew) 
+   fl.x = max(0, fl.x-tilew)
+   create_lava2(fl.x + tilew,fl.y,fl.sw,fl.sh,12,trans2)
+   fl.transform = transmove
+   fl.dire = true
+   fl.timer = flr((maprate - t%maprate)/2)
   end
   if (btn(1)) then
    fl.x = min(gridw-tilew, fl.x+tilew)
+   create_lava2(fl.x - tilew,fl.y,fl.sw,fl.sh,12,trans2)
+   fl.transform = transmove
+   fl.dire = false
+   fl.timer = flr((maprate - t%maprate)/2)
   end
  end
  if time_to_move_cam() then
-  create_lava2(fl.x,flr(fl.y - tileh),fl.sw,fl.sh,trans2)
-  --flo.mode = trans2[flr((t%maprate)*#trans2/maprate)+1]
-  --spr(fl.mode,fl.x,fl.y-tilew,fl.sw,fl.sh)
+  create_lava2(fl.x,flr(fl.y - tileh),fl.sw,fl.sh,12,trans2)
  end
 end
 
@@ -477,17 +489,18 @@ function draw_lavas()
 end
 
 function draw_lava(fl)
- spr(fl.mode,fl.x,fl.y,fl.sw,fl.sh)
+ spr(fl.mode,fl.x,fl.y,fl.sw,fl.sh,fl.dire)
 end
 
-function create_lava2(x,y,sw,sh,mode,transform)
+function create_lava2(x,y,sw,sh,mode,transform,timer)
  local flow2 = {}
   flow2.x = x or gridw/2
   flow2.y = y or tileh
   flow2.sw = sw or 2
   flow2.sh = sh or 2
-  flow2.mode = mode or 0
+  flow2.mode = mode or 12
   flow2.transform = transform or trans2
+  flow2.timer = timer or 0
  add(lava2,flow2)
 end
 
@@ -580,7 +593,6 @@ end
 
 function game_init()
  t = 0
- mode = 0
  cls()
  createmap()
  music(28)
