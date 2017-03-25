@@ -684,9 +684,9 @@ function drawtile(c,r,tile)             --draws the tile
  y = tileh * (r-1)
  bg = tile.bg
  draw_bg(x,y,bg)
- if tile.thing then
-  tile.thing.draw(x,y,tile.thing)
- end
+ -- if tile.thing then
+ --  tile.thing.draw(x,y,tile.thing)
+ -- end
 end
 
 function update_tile(c,r,tile)
@@ -877,6 +877,17 @@ function game_draw()
  end
  draw_lavas2()
  draw_lavas()
+ for rn,row in pairs(mappy) do
+  for cn,tile in pairs(row) do
+   if tile.thing then
+    x = tilew * (c-1)
+    y = tileh * (r-1)
+    tile.thing.draw(tilew * (cn-1),
+                    tileh * (rn-1),
+                    tile.thing)
+   end
+  end
+ end
  -- testing interfaces
  draw_disregard_cam(draw_sparks)
  reset_shakes()
