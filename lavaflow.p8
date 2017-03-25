@@ -702,7 +702,7 @@ function create_person()
  return pe
 end
 
-function update_person(p)
+function update_person(pe)
 
 end
 
@@ -726,11 +726,11 @@ end
 
 function create_plant()
  local pl = {}
-
+  pl.transform = pltrans
  return pl
 end
 
-function update_plant(p)
+function update_plant(pl)
 
 end
 
