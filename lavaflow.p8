@@ -602,6 +602,7 @@ function draw_lava2(fl2)
 end
 
 function createrow(spawn_chance)               --creates particular row, each tiles has own color
+ spawn_chance = spawn_chance or 0
  spawn = weighted_choice(spawn_chance)
  obts_left = flr(mapw/2)
  local row = {}
