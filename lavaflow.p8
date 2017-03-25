@@ -674,7 +674,7 @@ function game_update()
 end
 
 function game_draw()
- cls()
+ cls(12)
  -- testing interfaces
  apply_shakes()
  -- end testing interfaces
