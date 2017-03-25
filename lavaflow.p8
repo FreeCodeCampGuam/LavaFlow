@@ -64,10 +64,10 @@ trans1 = {4,6,8,10} -- selectable sprites
 trans2 = {12,14}
 transmove = {64,66,68,70}
 
-petrans = {38,40,42}
-pltrans = {32,34,36}
-htrans = {96,98,100}
-rtrans = {46}
+petrans = {38,40,38,42} -- person
+pltrans = {32,34,36} -- plant
+htrans = {96,98,100} -- house
+rtrans = {46} -- rock
 
 --------------------------------------------
 
@@ -624,6 +624,14 @@ function createrow(spawn_chance)               --creates particular row, each ti
  return row
 end
 
+function update_rows()
+ for rn,row in pairs(mappy) do
+  for cn,tile in pairs(row) do
+   update_tile(cn,rn,tile)
+  end
+ end
+end
+
 function create_tile(thing) --returns random color
  local tl = {}
   tl.thing = thing
@@ -677,6 +685,12 @@ function drawtile(c,r,tile)             --draws the tile
  end
 end
 
+function update_tile(c,r,tile)
+ if tile.thing then
+  tile.thing.update(c,r,tile)
+ end
+end
+
 --objects
 
 function create_object(tp)
@@ -696,16 +710,20 @@ end
 
 function create_person()
  local p = {}
-
+  p.x = rnd(4)-2
+  p.y = rnd(4)-2
+  p.left = weighted_choice(.5)
+  p.up = weighted_choice(.5)
  return p
 end
 
-function update_person(p)
-
+function update_person(cn,rn,p)
+ p.x += rnd()
 end
 
 function draw_person(x,y,p)
-
+ --sp = petrans[(flr(t/10)%#petrans) + 1]
+ --spr(sp, x+p.x, y+p.y, 2,2, p.left, p.up)
 end
 
 function create_house()
@@ -714,7 +732,7 @@ function create_house()
  return h
 end
 
-function update_house(h)
+function update_house(cn,rn,h)
 
 end
 
@@ -728,7 +746,7 @@ function create_plant()
  return p
 end
 
-function update_plant(p)
+function update_plant(cn,rn,p)
 
 end
 
@@ -742,12 +760,12 @@ function create_rock()
  return r
 end
 
-function update_rock(r)
+function update_rock(cn,rn,r)
 
 end
 
 function draw_rock(x,y,r)
- spr(46,x,y,2,2,r.flipped)
+ spr(rtrans[1],x,y,2,2,r.flipped)
 end
 
 function createmap()          --creates rows
@@ -785,6 +803,7 @@ function game_update()
  t += 1
  update_lavas2()
  update_lavas()
+ update_rows()
  update_shakes()
  update_sparks()
  -- testing interfaces
