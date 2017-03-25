@@ -567,6 +567,9 @@ function update_lava(fl)
    end
   end
  end
+ if rock_collision(fl.x, fl.y) then
+  del(lava, fl)
+ end
 end
 
 function draw_lavas()
@@ -575,6 +578,15 @@ end
 
 function draw_lava(fl)
  spr(fl.mode,fl.x,fl.y,fl.sw,fl.sh,fl.dire)
+end
+
+function rock_collision(x,y)
+ c = flr(x/tilew) + 1
+ r = flr(y/tileh) + 1
+ if not mappy[r][c].thing then
+  return false
+ end
+ return mappy[r][c].thing.type == "rock"
 end
 
 function create_lava2(x,y,sw,sh,mode,transform,lt)
@@ -705,6 +717,7 @@ function create_object(tp)
  ddefs = {house  = draw_house,    plant = draw_plant,
           person = draw_person,   rock  = draw_rock}
  local ob   = cdefs[tp]()
+  ob.type = tp
   ob.update = udefs[tp]
   ob.draw   = ddefs[tp]
   ob.burning = false
