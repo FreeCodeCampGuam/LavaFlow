@@ -722,7 +722,7 @@ function create_person()
 end
 
 function update_person(cn,rn,p)
- p.x += rnd()
+ --p.x += rnd()
 end
 
 function draw_person(x,y,p)
@@ -789,7 +789,7 @@ end
 
 function update_life(heart)
 end
- 
+
 
 function createmap()          --creates rows
  for r = #mappy+1,(maph+preprows) do
