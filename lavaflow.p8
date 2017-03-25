@@ -688,19 +688,27 @@ function create_object(tp)
 end
 
 function create_person()
+ local p = {}
 
+ return p
 end
 
 function create_house()
+ local h = {}
 
+ return h
 end
 
 function create_plant()
+ local p = {}
 
+ return p
 end
 
 function create_rock()
+ local r = {}
 
+ return r
 end
 
 function update_person()
