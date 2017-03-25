@@ -27,7 +27,7 @@ maprate = 30          --how long until the map changes
 lava = {}
 lava2 = {}
 
-types = {plant,person,house,rock}
+types = {"plant","person","house","rock"}
 
 --title globals--
 banner = {}
@@ -605,7 +605,6 @@ end
 
 function createrow(spawn_chance)               --creates particular row, each tiles has own color
  spawn_chance = spawn_chance or 0
- spawn = weighted_choice(spawn_chance)
  obts_left = flr(mapw/2)
  local row = {}
   for c = 1,mapw do
@@ -660,7 +659,7 @@ function move_map()                 --moves the map and generates a new row
  for change = 1,(#mappy-1) do
   mappy[change] = mappy[change + 1]
  end
- mappy[#mappy] = createrow()
+ mappy[#mappy] = createrow(15/maprate)
 end
 
 function drawtile(c,r,tile)             --draws the tile
@@ -669,8 +668,7 @@ function drawtile(c,r,tile)             --draws the tile
  bg = tile.bg
  draw_bg(x,y,bg)
  if tile.thing then
-  draw_disregard_cam(tile.thing.draw,
-                     x,y,tile.thing)
+  tile.thing.draw(x,y,tile.thing)
  end
 end
 
