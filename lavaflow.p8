@@ -535,7 +535,7 @@ function update_lava(fl)
    if (fl.x > 0) then
     if (fl.coold <= 0) and (fl.indi <= 0) then
      fl.x -= tilew
-     fl.dire = true 
+     fl.dire = true
      create_lava2(fl.x + tilew,fl.y,fl.sw,fl.sh,12,trans2)
      fl.lt = flr((maprate - t%maprate)/2)
      fl.coold = flr(maprate/tilew)*9                      --indicates how long before it can move again
@@ -669,6 +669,56 @@ function drawtile(c,r,tile)             --draws the tile
   draw_disregard_cam(tile.thing.draw,
                      x,y,tile.thing)
  end
+end
+
+--objects
+
+function create_person()
+
+end
+
+function create_house()
+
+end
+
+function create_plant()
+
+end
+
+function create_rock()
+
+end
+
+function update_person()
+
+end
+
+function update_house()
+
+end
+
+function update_plant()
+
+end
+
+function update_rock()
+
+end
+
+function draw_person()
+
+end
+
+function draw_house()
+
+end
+
+function draw_plant()
+
+end
+
+function draw_rock()
+
 end
 
 function createmap()          --creates rows
