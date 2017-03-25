@@ -27,6 +27,8 @@ maprate = 30          --how long until the map changes
 lava = {}
 lava2 = {}
 
+types = {plant,person,house,rock}
+
 --title globals--
 banner = {}
 loading = false
@@ -531,9 +533,9 @@ function update_lava(fl)
   if (btn(0)) then
    if (fl.x > 0) then
     if (fl.coold <= 0) and (fl.indi <= 0) then
-     fl.x -= tilew 
+     fl.x -= tilew
+     fl.dire = true 
      create_lava2(fl.x + tilew,fl.y,fl.sw,fl.sh,12,trans2)
-     fl.dire = true
      fl.lt = flr((maprate - t%maprate)/2)
      fl.coold = flr(maprate/tilew)*9                      --indicates how long before it can move again
      fl.indi -= 1                                         --indicates direction of movement
@@ -544,8 +546,8 @@ function update_lava(fl)
    if (fl.x < gridw - tilew) then
     if (fl.coold <= 0) and (fl.indi >= 0) then
      fl.x += tilew
-     create_lava2(fl.x - tilew,fl.y,fl.sw,fl.sh,12,trans2)
      fl.dire = false
+     create_lava2(fl.x - tilew,fl.y,fl.sw,fl.sh,12,trans2)
      fl.lt = flr((maprate - t%maprate)/2)
      fl.coold = flr(maprate/tilew)*9
      fl.indi += 1
@@ -584,6 +586,9 @@ function update_lava2(fl2)
  fl2.mode = fl2.transform[flr((fl2.lt%maprate)*#fl2.transform/maprate)+1]
  if time_to_move_cam() then
   fl2.y -= tileh
+  if (fl2.y < 0) then
+   del(lava2,fl2)
+  end
  end
 end
 
@@ -598,15 +603,18 @@ end
 function createrow()               --creates particular row, each tiles has own color
  local row = {}
   for c = 1,mapw do
-   add(row, create_tile(rnd(16)))
+   add(row, create_tile())
   end
  return row
 end
 
-function create_tile(col) --returns random color
+function create_tile() --returns random color
  local tl = {}
-  tl.col = col
+  tl.bool = false
   tl.bg = create_bg_tile()
+  if (tl.bool == true) then
+   tl.type = types[flr(rnd(#types)+1)]  
+  end
  return tl
 end
 
