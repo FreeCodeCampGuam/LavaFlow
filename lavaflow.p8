@@ -148,8 +148,6 @@ function title_draw()
 
 end
 
-end
-
 function draw_banner()
  for j=0,banner.h do for i=0,banner.w do
   if banner.pixels[j][i] != 0 then
