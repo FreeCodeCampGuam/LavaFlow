@@ -18,6 +18,8 @@ preprows = 2          --how many rows prepared before entering the screen
 
 tilew = gridw/mapw    --calculation of how the width and length of tiles
 tileh = gridh/maph
+map_t = 0
+
 
 row = {}
 mappy = {}            --mappy since map is a special token
@@ -30,6 +32,7 @@ lava2 = {}
 types = {"plant","person","house","rock"}
 
 hearts = {}
+score = 0
 
 --title globals--
 banner = {}
@@ -177,17 +180,19 @@ end
 --loading--
 function loading_init()
  t = 0
+ map_t = 0
  loading = true
  create_lava(flr(gridw/2), 0)
 end
 
 function loading_update()
  t += 1
+ map_t = t
  loading_maprate -= .5
 
  game_maprate = maprate
  maprate = loading_maprate
- if time_to_move_cam() then
+ if t % maprate == 0 then
   for l in all(lava) do
    l.y += tileh
    create_lava2(l.x,flr(l.y - tileh),l.sw,l.sh,12,trans2)
@@ -205,13 +210,16 @@ function loading_update()
  else
   banner.y -= .5
  end
+ if time_to_move_cam() then
+  map_t = 0
+ end
 end
 
 function loading_draw()
  cls(12)
-
  game_draw()
  draw_disregard_cam(draw_banner)
+ print(map_t, 0,7, 7)
 end
 
 --interfaces--
@@ -534,10 +542,10 @@ function update_lava(fl)
 
  if (fl.lt <= 0) then
   fl.transform = trans1
-  fl.mode = fl.transform[flr((t%maprate)*#fl.transform/maprate)+1] --divided by total transformations + starting sprite number
+  fl.mode = fl.transform[flr((map_t%maprate)*#fl.transform/maprate)+1] --divided by total transformations + starting sprite number
  else                                                              --if moving horizontally
   fl.transform = transmove
-  fl.mode = fl.transform[flr((t%maprate)*#fl.transform/maprate)+1]
+  fl.mode = fl.transform[flr((map_t%maprate)*#fl.transform/maprate)+1]
   fl.lt -= 1
  end
 
@@ -785,6 +793,47 @@ function draw_rock(x,y,r)
  spr(rtrans[1],x,y,2,2,r.flipped)
 end
 
+function draw_score()
+ draw_outline(_draw_score, 0)
+ _draw_score()
+end
+function _draw_score()
+ print(score, 2,2, 7)
+end
+
+-- from
+-- one room dungeon by trasevol_dog
+-- #ld37 - theme was 'one room'
+function draw_outline(draw,c,arg)
+ all_colors_to(c)
+
+ camera(0-1,0)
+ draw(arg)
+ camera(0+1,0)
+ draw(arg)
+ camera(0,0-1)
+ draw(arg)
+ camera(0,0+1)
+ draw(arg)
+
+ camera(0,0)
+ all_colors_to()
+end
+
+function all_colors_to(c)
+ if c then
+  for i=0,15 do
+   pal(i,c)
+  end
+ else
+  for i=0,15 do
+   pal(i,i)
+  end
+ end
+end
+-----------------------------------
+
+
 function create_life(counts)
  thiscount = counts or 3
  local heart = {}
@@ -811,11 +860,12 @@ function createmap()          --creates rows
 end
 
 function time_to_move_cam()
- return (t % maprate) == 0
+ return map_t >= maprate
 end
 
 function game_init(imap, ilava)
  t = 0
+ map_t = 0
  --cls()
  --allow other states to load map
  if imap and #imap >= maph+preprows then
@@ -838,6 +888,9 @@ end
 
 function game_update()
  t += 1
+ map_t += 1
+ score += 1/30
+ maprate -= .01
  update_lavas2()
  update_lavas()
  update_rows()
@@ -875,6 +928,9 @@ function game_update()
                rnd(3), rnd(3))
   end
  end
+ if time_to_move_cam() then
+  map_t = 0
+ end
  -- end testing interfaces
 end
 
@@ -904,6 +960,9 @@ function game_draw()
  -- testing interfaces
  draw_disregard_cam(draw_sparks)
  reset_shakes()
+ if score != 0 then
+  draw_disregard_cam(draw_score)
+ end
  -- end testing interfaces
 end
 
