@@ -729,19 +729,19 @@ function update_rock(r)
 
 end
 
-function draw_person(p)
+function draw_person(x,y,p)
 
 end
 
-function draw_house(h)
+function draw_house(x,y,h)
 
 end
 
-function draw_plant(p)
+function draw_plant(x,y,p)
 
 end
 
-function draw_rock(r)
+function draw_rock(x,y,r)
 
 end
 
