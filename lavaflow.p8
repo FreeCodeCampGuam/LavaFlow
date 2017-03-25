@@ -568,7 +568,7 @@ function update_lava(fl)
   end
  end
  if rock_collision(fl.x, fl.y) then
-  del(lava, fl)
+  hurt_lava()
  end
 end
 
@@ -586,7 +586,11 @@ function rock_collision(x,y)
  if not mappy[r][c].thing then
   return false
  end
- return mappy[r][c].thing.type == "rock"
+ if mappy[r][c].thing.type == "rock" then 
+  mappy[r][c].thing.type = "hitrock" 
+  return true
+ end
+ return false
 end
 
 function create_lava2(x,y,sw,sh,mode,transform,lt)
@@ -808,6 +812,7 @@ function draw_life(heart)
 end
 
 function hurt_lava()
+ del(hearts,hearts[#hearts])
 end
 
 function createmap()          --creates rows
@@ -882,6 +887,11 @@ function game_update()
   end
  end
  -- end testing interfaces
+ if (#hearts <= 0) then
+  title_init()
+  _update = title_update
+  _draw = title_draw
+ end
 end
 
 function game_draw()
