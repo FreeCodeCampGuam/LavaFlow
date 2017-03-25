@@ -1,6 +1,9 @@
 pico-8 cartridge // http://www.pico-8.com
 version 8
 __lua__
+-- lavaflow - fccgjam: lava floors
+-- by bobsalas, xell0s, irdumb
+
 sfx(26)
 --sfx
 sfx_spark = 24
