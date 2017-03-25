@@ -591,15 +591,25 @@ function time_to_move_cam()
  return (t % maprate) == 0
 end
 
-function game_init()
+function game_init(imap, ilava)
  t = 0
  cls()
- createmap()
+ --allow other states to load map
+ if imap and #imap >= maph+preprows then
+  mappy = imap
+ else
+  createmap()
+ end
  music(28)
  -- testing interfaces
  graphics_init()
  -- end testing interfaces
- create_lava()
+ --allow other states to spawn player
+ if ilava then
+  lava = ilava
+ else
+  create_lava()
+ end
 end
 
 function game_update()
