@@ -97,6 +97,35 @@ function title_init()
  music(0)
 end
 
+function title_update()
+ if loading then
+  game_update()
+  if banner.y < -(banner.h+18) then
+   _update = game_update
+   _draw = game_draw
+  else
+   banner.y -= .7
+  end
+ else -- not loading
+  t += 1
+  if btn(5) then
+   loading = true
+   --game_init()
+  else
+   if rnd(30) > 29 then
+    x = banner.x + rnd(banner.w)
+    y = banner.y + rnd(banner.h)
+    spawn_spark(1, x, y,
+                ((x-banner.x)-banner.w/2)/(banner.w/2)*.6,
+                -- -abs(((y-banner.y)-banner.h/2)/(banner.h/2)*.4),
+                0,
+                banner.w/10, banner.h/10, 1, 0,0)
+   end
+  end
+ end
+ update_sparks()
+end
+
 function title_draw()
  cls(12)
 
@@ -105,6 +134,7 @@ function title_draw()
   game_draw()
  end
 
+ draw_sparks()
  draw_disregard_cam(draw_banner)
 
  if not loading then
@@ -115,30 +145,13 @@ function title_draw()
    print(m,64-(#m*4)/2, 95, 2)
   end
  end
+
 end
 
-function title_update()
- t += 1
- if loading then
-  t -= 1
-  game_update()
-  if banner.y < -48 then
-   _update = game_update
-   _draw = game_draw
-  end
- end
- if not loading then
-  if btn(5) then
-   loading = true
-   game_init()
-  end
- else
-  banner.y -= .7
- end
 end
 
 function draw_banner()
- for j=0,32 do for i=0,100 do
+ for j=0,banner.h do for i=0,banner.w do
   if banner.pixels[j][i] != 0 then
    if not loading then
     pset(i+banner.x,
