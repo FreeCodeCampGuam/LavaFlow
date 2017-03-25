@@ -98,41 +98,27 @@ function title_init()
 end
 
 function title_update()
- if loading then
-  game_update()
-  if banner.y < -(banner.h+18) then
-   _update = game_update
-   _draw = game_draw
-  else
-   banner.y -= .7
-  end
- else -- not loading
-  t += 1
-  if btn(5) then
-   loading = true
-   --game_init()
-  else
-   if rnd(30) > 29 then
-    x = banner.x + rnd(banner.w)
-    y = banner.y + rnd(banner.h)
-    spawn_spark(1, x, y,
-                ((x-banner.x)-banner.w/2)/(banner.w/2)*.6,
-                -- -abs(((y-banner.y)-banner.h/2)/(banner.h/2)*.4),
-                0,
-                banner.w/10, banner.h/10, 1, 0,0)
-   end
-  end
+ t += 1
+ if rnd(30) > 29 then
+  x = banner.x + rnd(banner.w)
+  y = banner.y + rnd(banner.h)
+  spawn_spark(1, x, y,
+              ((x-banner.x)-banner.w/2)/(banner.w/2)*.6,
+              -- -abs(((y-banner.y)-banner.h/2)/(banner.h/2)*.4),
+              0,
+              banner.w/10, banner.h/10, 1, 0,0)
  end
  update_sparks()
+ if btn(5) then
+  loading = true
+  loading_init()
+  _update = loading_update
+  _draw = loading_draw
+ end
 end
 
 function title_draw()
  cls(12)
-
-
- if loading then
-  game_draw()
- end
 
  draw_sparks()
  draw_disregard_cam(draw_banner)
@@ -166,6 +152,31 @@ function draw_banner()
         banner.pixels[j][i])
   end
  end end
+end
+
+--loading--
+function loading_init()
+ loading = true
+end
+
+function loading_update()
+ game_update()
+ if banner.y < -(banner.h+18) then
+  _update = game_update
+  _draw = game_draw
+ else
+  banner.y -= .7
+ end
+ update_sparks()
+end
+
+function loading_draw()
+ cls(12)
+
+ game_draw()
+
+ draw_sparks()
+ draw_disregard_cam(draw_banner)
 end
 
 --interfaces--
