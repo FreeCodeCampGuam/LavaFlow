@@ -31,6 +31,9 @@ lava2 = {}
 banner = {}
 loading = false
 
+--loading globals--
+loading_maprate = 150
+
 --interface globals--
 
 --shorter than particles
@@ -94,6 +97,7 @@ function title_init()
  loading = false
  banner_init()
  graphics_init()
+ createmap()
  music(0)
 end
 
@@ -120,12 +124,17 @@ end
 function title_draw()
  cls(12)
 
+ game_draw()
  draw_sparks()
  draw_disregard_cam(draw_banner)
 
  if not loading then
   m = "press x to erupt!"
+
   if t%45 > 15 then
+   circfill(64-(#m*4)/2, 97, 3, 7)
+   rectfill(64-(#m*4)/2, 94, 61-(#m*4)/2+(#m*4),94 + 6,7)
+   circfill(61-(#m*4)/2+(#m*4), 97, 3, 7)
    print(m,64-(#m*4)/2, 95, 1)
   elseif (t-2)%45 > 11 then
    print(m,64-(#m*4)/2, 95, 2)
@@ -156,26 +165,41 @@ end
 
 --loading--
 function loading_init()
+ t = 0
  loading = true
+ create_lava(flr(gridw/2), 0)
 end
 
 function loading_update()
- game_update()
- if banner.y < -(banner.h+18) then
+ t += 1
+ loading_maprate -= .5
+
+ game_maprate = maprate
+ maprate = loading_maprate
+ if time_to_move_cam() then
+  for l in all(lava) do
+   l.y += tileh
+   create_lava2(l.x,flr(l.y - tileh),l.sw,l.sh,12,trans2)
+  end
+ end
+ update_lavas2()
+ update_lavas()
+ maprate = game_maprate
+ update_sparks()
+
+ if loading_maprate <= maprate*2.5 then
+  game_init(mappy, lava)
   _update = game_update
   _draw = game_draw
  else
-  banner.y -= .7
+  banner.y -= .5
  end
- update_sparks()
 end
 
 function loading_draw()
  cls(12)
 
  game_draw()
-
- draw_sparks()
  draw_disregard_cam(draw_banner)
 end
 
@@ -622,7 +646,7 @@ end
 
 function game_init(imap, ilava)
  t = 0
- cls()
+ --cls()
  --allow other states to load map
  if imap and #imap >= maph+preprows then
   mappy = imap
@@ -683,7 +707,7 @@ function game_update()
 end
 
 function game_draw()
- cls(12)
+ --cls(12)
  -- testing interfaces
  apply_shakes()
  -- end testing interfaces
