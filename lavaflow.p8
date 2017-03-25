@@ -438,17 +438,19 @@ end
 --  udebug() -- for debug cursor control
 -- end
 
-function create_lava(x,y,sw,sh,mode,transform,movable,dire,timer)
+function create_lava(x,y,sw,sh,mode,transform,movable,dire,lt,coold,indi)
  local flow = {}
-  flow.x = x or flr(gridw/2)      --for x position
-  flow.y = y or flr(tileh*2)      --for y position
-  flow.sw = sw or 2               --for sprite width
-  flow.sh = sh or 2               --for sprite height
-  flow.mode = mode or 4           --for current step in animation
-  flow.transform = transform or trans1   --for type of tranformation
-  flow.movable = movable or true  --for declaring if movable
+  flow.x = x or flr(gridw/2)          --for x position
+  flow.y = y or flr(tileh*2)          --for y position
+  flow.sw = sw or 2                   --for sprite width
+  flow.sh = sh or 2                   --for sprite height
+  flow.mode = mode or 4               --for current step in animation
+  flow.transform = transform or trans1--for type of tranformation
+  flow.movable = movable or true      --for declaring if movable
   flow.dire = dire or false           --for indicating direction
-  flow.timer = timer or 0
+  flow.lt = lt or 0                   --for personal timing
+  flow.coold = coold or 0             --for cooldown on movement
+  flow.indi = indi or 0
  add(lava,flow)
 end
 
@@ -457,30 +459,46 @@ function update_lavas()
 end
 
 function update_lava(fl)
- if (fl.timer <= 0) then
-  fl.transform = trans1
-  fl.mode = fl.transform[flr((t%maprate)*#fl.transform/maprate)+1] --divided by total transformations + starting sprite number
- else
-  fl.timer -= 1
- end
- if (fl.movable == true) then
-  if (btn(0)) then
-   fl.x = max(0, fl.x-tilew)
-   create_lava2(fl.x + tilew,fl.y,fl.sw,fl.sh,12,trans2)
-   fl.transform = transmove
-   fl.dire = true
-   fl.timer = flr((maprate - t%maprate)/2)
-  end
-  if (btn(1)) then
-   fl.x = min(gridw-tilew, fl.x+tilew)
-   create_lava2(fl.x - tilew,fl.y,fl.sw,fl.sh,12,trans2)
-   fl.transform = transmove
-   fl.dire = false
-   fl.timer = flr((maprate - t%maprate)/2)
-  end
- end
+ fl.coold -= 1
  if time_to_move_cam() then
   create_lava2(fl.x,flr(fl.y - tileh),fl.sw,fl.sh,12,trans2)
+  fl.indi = 0
+ end
+
+ if (fl.lt <= 0) then
+  fl.transform = trans1
+  fl.mode = fl.transform[flr((t%maprate)*#fl.transform/maprate)+1] --divided by total transformations + starting sprite number
+ else                                                              --if moving horizontally
+  fl.transform = transmove
+  fl.mode = fl.transform[flr((t%maprate)*#fl.transform/maprate)+1]
+  fl.lt -= 1
+ end
+
+ if (fl.movable == true) then
+  if (btn(0)) then
+   if (fl.x > 0) then
+    if (fl.coold <= 0) and (fl.indi <= 0) then
+     fl.x -= tilew 
+     create_lava2(fl.x + tilew,fl.y,fl.sw,fl.sh,12,trans2)
+     fl.dire = true
+     fl.lt = flr((maprate - t%maprate)/2)
+     fl.coold = flr(maprate/tilew)*9                      --indicates how long before it can move again
+     fl.indi -= 1                                         --indicates direction of movement
+    end
+   end
+  end
+  if (btn(1)) then
+   if (fl.x < gridw - tilew) then
+    if (fl.coold <= 0) and (fl.indi >= 0) then
+     fl.x += tilew
+     create_lava2(fl.x - tilew,fl.y,fl.sw,fl.sh,12,trans2)
+     fl.dire = false
+     fl.lt = flr((maprate - t%maprate)/2)
+     fl.coold = flr(maprate/tilew)*9
+     fl.indi += 1
+    end
+   end
+  end
  end
 end
 
@@ -492,7 +510,7 @@ function draw_lava(fl)
  spr(fl.mode,fl.x,fl.y,fl.sw,fl.sh,fl.dire)
 end
 
-function create_lava2(x,y,sw,sh,mode,transform,timer)
+function create_lava2(x,y,sw,sh,mode,transform,lt)
  local flow2 = {}
   flow2.x = x or gridw/2
   flow2.y = y or tileh
@@ -500,7 +518,7 @@ function create_lava2(x,y,sw,sh,mode,transform,timer)
   flow2.sh = sh or 2
   flow2.mode = mode or 12
   flow2.transform = transform or trans2
-  flow2.timer = timer or 0
+  flow2.lt = lt or 0
  add(lava2,flow2)
 end
 
@@ -509,7 +527,8 @@ function update_lavas2()
 end
 
 function update_lava2(fl2)
- fl2.mode = fl2.transform[flr((t%maprate)*#fl2.transform/maprate)+1]
+ fl2.lt += 1
+ fl2.mode = fl2.transform[flr((fl2.lt%maprate)*#fl2.transform/maprate)+1]
  if time_to_move_cam() then
   fl2.y -= tileh
  end
