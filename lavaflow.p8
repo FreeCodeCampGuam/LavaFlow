@@ -31,6 +31,9 @@ lava2 = {}
 banner = {}
 loading = false
 
+--loading globals--
+loading_maprate = 150
+
 --interface globals--
 
 --shorter than particles
@@ -71,13 +74,13 @@ end
 
 --title--
 
-function title_init()
- t = 0
- loading = false
+function banner_init()
  banner = {}
  banner.pixels = {}
  banner.y = 32
  banner.x = 14
+ banner.h = 32
+ banner.w = 100
  cls()
  spr(128, 0,0,13,4)
  for j=0,32 do
@@ -87,51 +90,61 @@ function title_init()
   end
  end
  cls()
- push_cam()
+end
+
+function title_init()
+ t = 0
+ loading = false
+ banner_init()
+ graphics_init()
+ createmap()
+ music(0)
+end
+
+function title_update()
+ t += 1
+ if rnd(30) > 29 then
+  x = banner.x + rnd(banner.w)
+  y = banner.y + rnd(banner.h)
+  spawn_spark(1, x, y,
+              ((x-banner.x)-banner.w/2)/(banner.w/2)*.6,
+              -- -abs(((y-banner.y)-banner.h/2)/(banner.h/2)*.4),
+              0,
+              banner.w/10, banner.h/10, 1, 0,0)
+ end
+ update_sparks()
+ if btn(5) then
+  loading = true
+  loading_init()
+  _update = loading_update
+  _draw = loading_draw
+ end
 end
 
 function title_draw()
  cls(12)
 
-
- if loading then
-  game_draw()
- end
-
+ game_draw()
+ draw_sparks()
  draw_disregard_cam(draw_banner)
 
  if not loading then
   m = "press x to erupt!"
+
   if t%45 > 15 then
+   circfill(64-(#m*4)/2, 97, 3, 7)
+   rectfill(64-(#m*4)/2, 94, 61-(#m*4)/2+(#m*4),94 + 6,7)
+   circfill(61-(#m*4)/2+(#m*4), 97, 3, 7)
    print(m,64-(#m*4)/2, 95, 1)
   elseif (t-2)%45 > 11 then
    print(m,64-(#m*4)/2, 95, 2)
   end
  end
-end
 
-function title_update()
- t += 1
- if loading then
-  t -= 1
-  game_update()
-  if banner.y < -48 then
-   _update = game_update
-   _draw = game_draw
-  end
- end
- if not loading then
-  if btn(5) then
-   loading = true
-   game_init()
-  end
- else
-  banner.y -= .7
- end
 end
 
 function draw_banner()
- for j=0,32 do for i=0,100 do
+ for j=0,banner.h do for i=0,banner.w do
   if banner.pixels[j][i] != 0 then
    if not loading then
     pset(i+banner.x,
@@ -148,6 +161,46 @@ function draw_banner()
         banner.pixels[j][i])
   end
  end end
+end
+
+--loading--
+function loading_init()
+ t = 0
+ loading = true
+ create_lava(flr(gridw/2), 0)
+end
+
+function loading_update()
+ t += 1
+ loading_maprate -= .5
+
+ game_maprate = maprate
+ maprate = loading_maprate
+ if time_to_move_cam() then
+  for l in all(lava) do
+   l.y += tileh
+   create_lava2(l.x,flr(l.y - tileh),l.sw,l.sh,12,trans2)
+  end
+ end
+ update_lavas2()
+ update_lavas()
+ maprate = game_maprate
+ update_sparks()
+
+ if loading_maprate <= maprate*2.5 then
+  game_init(mappy, lava)
+  _update = game_update
+  _draw = game_draw
+ else
+  banner.y -= .5
+ end
+end
+
+function loading_draw()
+ cls(12)
+
+ game_draw()
+ draw_disregard_cam(draw_banner)
 end
 
 --interfaces--
@@ -587,10 +640,10 @@ function draw_bg(x,y, bg)
 end
 
 function move_map()                 --moves the map and generates a new row
- for change = 1,(maph+preprows-1) do
+ for change = 1,(#mappy-1) do
   mappy[change] = mappy[change + 1]
  end
- mappy[maph+preprows] = createrow()
+ mappy[#mappy] = createrow()
 end
 
 function drawtile(c,r,tile)             --draws the tile
@@ -601,7 +654,7 @@ function drawtile(c,r,tile)             --draws the tile
 end
 
 function createmap()          --creates rows
- for r = 1,(maph+preprows) do
+ for r = #mappy+1,(maph+preprows) do
   mappy[r] = createrow()
  end
 end
@@ -610,15 +663,25 @@ function time_to_move_cam()
  return (t % maprate) == 0
 end
 
-function game_init()
+function game_init(imap, ilava)
  t = 0
- cls()
- createmap()
+ --cls()
+ --allow other states to load map
+ if imap and #imap >= maph+preprows then
+  mappy = imap
+ else
+  createmap()
+ end
  music(28)
  -- testing interfaces
  graphics_init()
  -- end testing interfaces
- create_lava()
+ --allow other states to spawn player
+ if ilava then
+  lava = ilava
+ else
+  create_lava()
+ end
 end
 
 function game_update()
@@ -663,7 +726,7 @@ function game_update()
 end
 
 function game_draw()
- cls()
+ --cls(12)
  -- testing interfaces
  apply_shakes()
  -- end testing interfaces
