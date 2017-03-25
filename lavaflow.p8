@@ -785,24 +785,30 @@ function draw_rock(x,y,r)
  spr(rtrans[1],x,y,2,2,r.flipped)
 end
 
-function create_life(counts)
- thiscount = counts or 3
- local heart = {}
- for ct = 1,thiscount do
-  heart.x = gridw - ct*tilew
-  heart.y = tileh/2
-  heart.transform = hearttrans
- add(hearts,heart)
+function create_life(hcount)
+ hc = hcount or 3
+ for i = 1,hc do
+  local heart = {}
+   heart.x = gridw - (i*tilew/2)
+   heart.y = tileh/4
+   heart.sw = 1
+   heart.sh = 1
+   heart.mode = hearttrans[1]
+   heart.transform = hearttrans
+  add(hearts,heart)
  end
 end
 
-function update_lives()
- foreach(hearts,update_life)
+function draw_lives()
+ foreach(hearts,draw_life)
 end
 
-function update_life(heart)
+function draw_life(heart)
+ spr(heart.mode,heart.x,heart.y,heart.sw,heart.sh)
 end
 
+function hurt_lava()
+end
 
 function createmap()          --creates rows
  for r = #mappy+1,(maph+preprows) do
@@ -905,6 +911,7 @@ function game_draw()
  draw_disregard_cam(draw_sparks)
  reset_shakes()
  -- end testing interfaces
+ draw_disregard_cam(draw_lives)
 end
 
 __gfx__
