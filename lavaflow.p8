@@ -601,21 +601,26 @@ function draw_lava2(fl2)
  spr(fl2.mode,fl2.x,fl2.y,fl2.sw,fl2.sh)
 end
 
-function createrow()               --creates particular row, each tiles has own color
+function createrow(spawn_chance)               --creates particular row, each tiles has own color
+ spawn = weighted_choice(spawn_chance)
+ obts_left = flr(mapw/2)
  local row = {}
   for c = 1,mapw do
-   add(row, create_tile())
+   if rnd(1) < spawn_chance then
+    choice = types[flr(rnd(#types))+1]
+
+    add(row, create_tile(create_object(choice)))
+   else
+    add(row, create_tile())
+   end
   end
  return row
 end
 
-function create_tile() --returns random color
+function create_tile(thing) --returns random color
  local tl = {}
-  tl.bool = false
+  tl.thing = thing
   tl.bg = create_bg_tile()
-  if (tl.bool == true) then
-   tl.type = types[flr(rnd(#types)+1)]  
-  end
  return tl
 end
 
@@ -660,6 +665,10 @@ function drawtile(c,r,tile)             --draws the tile
  y = tileh * (r-1)
  bg = tile.bg
  draw_bg(x,y,bg)
+ if tile.thing then
+  draw_disregard_cam(tile.thing.draw,
+                     x,y,tile.thing)
+ end
 end
 
 function createmap()          --creates rows
