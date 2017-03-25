@@ -264,9 +264,10 @@ function trans_cam(x, y)
  pcamy = camy
 end
 
-function draw_disregard_cam(f)
+-- takes up to 3 variables
+function draw_disregard_cam(f, a,b,c)
  camera(0,0)
- f()
+ f(a,b,c)
  trans_cam(0,0)
 end
 -- end camera interface
