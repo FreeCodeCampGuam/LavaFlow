@@ -684,6 +684,7 @@ function create_object(tp)
   ob.update = udefs[tp]
   ob.draw   = ddefs[tp]
   ob.burning = false
+  ob.life = 100
  return ob
 end
 
