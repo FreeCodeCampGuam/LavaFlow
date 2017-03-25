@@ -695,10 +695,26 @@ function create_person()
  return p
 end
 
+function update_person(p)
+
+end
+
+function draw_person(x,y,p)
+
+end
+
 function create_house()
  local h = {}
 
  return h
+end
+
+function update_house(h)
+
+end
+
+function draw_house(x,y,h)
+
 end
 
 function create_plant()
@@ -707,37 +723,21 @@ function create_plant()
  return p
 end
 
+function update_plant(p)
+
+end
+
+function draw_plant(x,y,p)
+
+end
+
 function create_rock()
  local r = {}
   r.flipped = weighted_choice(.5)
  return r
 end
 
-function update_person(p)
-
-end
-
-function update_house(h)
-
-end
-
-function update_plant(p)
-
-end
-
 function update_rock(r)
-
-end
-
-function draw_person(x,y,p)
-
-end
-
-function draw_house(x,y,h)
-
-end
-
-function draw_plant(x,y,p)
 
 end
 
