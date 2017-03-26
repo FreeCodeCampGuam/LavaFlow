@@ -30,5 +30,9 @@ If you would like to know more about this project, then you can check us out at 
 
 You can also look into Pico-8 to start your own game development here: http://www.lexaloffle.com/pico-8.php
 
+Playing the game:
+You can play the game from anywhere using this link: fccglavaflow.surge.sh
+
+From there use your right and left arrow keys to move that lava. Have fun playing the game, and extra high-fives to anyone who reports major bugs!!!
 
 ![da gam](lavaflow.p8.png)
